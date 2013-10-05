@@ -14,18 +14,17 @@ module.exports['node events'] = {
 
     'local': function(test) {
         var parser = this.parser;
-        parser.on('root', function(name, attributes) {
-            test.equal(name, 'root');
+        parser.on('root', function(attributes) {
             test.equal(attributes.attr1, 'root.attr1');
             test.equal(attributes.attr2, 'root.attr2');
             var nodeIndex = 1;
-            parser.on('node', function(name, attributes) {
-                test.equal(name, 'node');
+            parser.on('node', function(attributes) {
                 test.equal(attributes.attr1, 'node' + nodeIndex + '.attr1');
                 test.equal(attributes.attr2, 'node' + nodeIndex + '.attr2');
                 nodeIndex++;
-                parser.on('subnode', function(name) {
-                    test.equal(name, 'subnode');
+                parser.on('subnode', function(attributes) {
+                    test.equal(attributes.attr1, 'subnode.attr1');
+                    test.equal(attributes.attr2, 'subnode.attr2');
                 });
             });
         });
@@ -35,22 +34,21 @@ module.exports['node events'] = {
     },
 
     'stacked': function(test) {
-        this.parser.on('root', function(name, attributes) {
-            test.equal(name, 'root');
+        this.parser.on('root', function(attributes) {
             test.equal(attributes.attr1, 'root.attr1');
             test.equal(attributes.attr2, 'root.attr2');
         });
 
         var nodeIndex = 1;
-        this.parser.on('root', 'node', function(name, attributes) {
-            test.equal(name, 'node');
+        this.parser.on('root', 'node', function(attributes) {
             test.equal(attributes.attr1, 'node' + nodeIndex + '.attr1');
             test.equal(attributes.attr2, 'node' + nodeIndex + '.attr2');
             nodeIndex++;
         });
 
-        this.parser.on('root', 'node', 'subnode', function(name) {
-            test.equal(name, 'subnode');
+        this.parser.on('root', 'node', 'subnode', function(attributes) {
+            test.equal(attributes.attr1, 'subnode.attr1');
+            test.equal(attributes.attr2, 'subnode.attr2');
         });
 
         this.parser.end(SIMPLE_XML);
@@ -59,10 +57,14 @@ module.exports['node events'] = {
 
     'partially stacked 1': function(test) {
         var parser = this.parser;
-        parser.on('root', 'node', function(name, attributes) {
-            test.equal(name, 'node');
-            parser.on('subnode', function(name) {
-                test.equal(name, 'subnode');
+        var nodeIndex = 1;
+        parser.on('root', 'node', function(attributes) {
+            test.equal(attributes.attr1, 'node' + nodeIndex + '.attr1');
+            test.equal(attributes.attr2, 'node' + nodeIndex + '.attr2');
+            nodeIndex++;
+            parser.on('subnode', function(attributes) {
+                test.equal(attributes.attr1, 'subnode.attr1');
+                test.equal(attributes.attr2, 'subnode.attr2');
             });
         });
 
@@ -72,10 +74,13 @@ module.exports['node events'] = {
 
     'partially stacked 2': function(test) {
         var parser = this.parser;
-        parser.on('root', function(name, attributes) {
-            test.equal(name, 'root');
-            parser.on('node', 'subnode', function(name) {
-                test.equal(name, 'subnode');
+        parser.on('root', function(attributes) {
+            test.equal(attributes.attr1, 'root.attr1');
+            test.equal(attributes.attr2, 'root.attr2');
+            var nodeIndex = 1;
+            parser.on('node', 'subnode', function(attributes) {
+                test.equal(attributes.attr1, 'subnode.attr1');
+                test.equal(attributes.attr2, 'subnode.attr2');
             });
         });
 
