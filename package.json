@@ -1,0 +1,21 @@
+{
+    "name":         "exml",
+    "version":      "0.1.0",
+    "description":  "An event based XML parsing library using SAX under the hood for speed and efficiency.",
+    "keywords":     ["xml", "events"],
+    "author":       "Luc Heinrich <luc@honk-honk.com>",
+    "license":      "BSD",
+
+    "repository": {
+        "type": "git",
+        "url": "http://github.com/lucsky/node-exml.git"
+    },
+
+    "main": "./lib/exml.js",
+    "dependencies": {
+        "sax": ""
+    },
+    "optionalDependencies": {
+        "node-expat": ""
+    }
+}
