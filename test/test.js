@@ -6,13 +6,13 @@ var SIMPLE_XML = fs.readFileSync(__dirname + '/fixtures/simple.xml'),
     CDATA_XML = fs.readFileSync(__dirname + '/fixtures/cdata.xml'),
     MIXED_XML = fs.readFileSync(__dirname + '/fixtures/mixed.xml');
 
-module.exports.exml = {
+module.exports['node events'] = {
     setUp: function(callback) {
         this.parser = new exml.Parser();
         callback();
     },
 
-    'locale node events': function(test) {
+    'local': function(test) {
         var parser = this.parser;
         parser.on('root', function(name, attributes) {
             test.equal(name, 'root');
@@ -24,6 +24,9 @@ module.exports.exml = {
                 test.equal(attributes.attr1, 'node' + nodeIndex + '.attr1');
                 test.equal(attributes.attr2, 'node' + nodeIndex + '.attr2');
                 nodeIndex++;
+                parser.on('subnode', function(name) {
+                    test.equal(name, 'subnode');
+                });
             });
         });
 
@@ -31,7 +34,7 @@ module.exports.exml = {
         test.done();
     },
 
-    'stacked node events': function(test) {
+    'stacked': function(test) {
         this.parser.on('root', function(name, attributes) {
             test.equal(name, 'root');
             test.equal(attributes.attr1, 'root.attr1');
@@ -46,11 +49,48 @@ module.exports.exml = {
             nodeIndex++;
         });
 
+        this.parser.on('root', 'node', 'subnode', function(name) {
+            test.equal(name, 'subnode');
+        });
+
         this.parser.end(SIMPLE_XML);
         test.done();
     },
 
-    'local text events': function(test) {
+    'partially stacked 1': function(test) {
+        var parser = this.parser;
+        parser.on('root', 'node', function(name, attributes) {
+            test.equal(name, 'node');
+            parser.on('subnode', function(name) {
+                test.equal(name, 'subnode');
+            });
+        });
+
+        this.parser.end(SIMPLE_XML);
+        test.done();
+    },
+
+    'partially stacked 2': function(test) {
+        var parser = this.parser;
+        parser.on('root', function(name, attributes) {
+            test.equal(name, 'root');
+            parser.on('node', 'subnode', function(name) {
+                test.equal(name, 'subnode');
+            });
+        });
+
+        this.parser.end(SIMPLE_XML);
+        test.done();
+    }
+};
+
+module.exports['text events'] = {
+    setUp: function(callback) {
+        this.parser = new exml.Parser();
+        callback();
+    },
+
+    'local': function(test) {
         var parser = this.parser,
             index = 1;
 
@@ -68,7 +108,7 @@ module.exports.exml = {
         test.done();
     },
 
-    'stacked text events': function(test) {
+    'stacked': function(test) {
         var index = 1;
         this.parser.on('root', 'node', '$text', function(text) {
             test.equal(text, 'text content ' + index);
@@ -77,9 +117,16 @@ module.exports.exml = {
 
         this.parser.end(TEXT_XML);
         test.done();
+    }
+};
+
+module.exports['cdata events'] = {
+    setUp: function(callback) {
+        this.parser = new exml.Parser();
+        callback();
     },
 
-    'local cdata events': function(test) {
+    'local': function(test) {
         var parser = this.parser,
             index = 1;
 
@@ -97,7 +144,7 @@ module.exports.exml = {
         test.done();
     },
 
-    'stacked cdata events': function(test) {
+    'stacked': function(test) {
         var index = 1;
         this.parser.on('root', 'node', '$cdata', function(text) {
             test.equal(text, 'CDATA content ' + index);
@@ -106,9 +153,16 @@ module.exports.exml = {
 
         this.parser.end(CDATA_XML);
         test.done();
+    }
+};
+
+module.exports['mixed content events'] = {
+    setUp: function(callback) {
+        this.parser = new exml.Parser();
+        callback();
     },
 
-    'local mixed content events': function(test) {
+    'local': function(test) {
         var parser = this.parser,
             index = 1;
 
@@ -126,7 +180,7 @@ module.exports.exml = {
         test.done();
     },
 
-    'stacked mixed content events': function(test) {
+    'stacked': function(test) {
         var index = 1;
         this.parser.on('root', 'node', '$content', function(content) {
             test.equal(content, 'Text content followed by some CDATA content ' + index);

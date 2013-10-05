@@ -3,4 +3,7 @@
     <node attr1="node1.attr1" attr2="node1.attr2" />
     <node attr1="node2.attr1" attr2="node2.attr2" />
     <node attr1="node3.attr1" attr2="node3.attr2" />
+    <node attr1="node4.attr1" attr2="node4.attr2">
+        <subnode />
+    </node>
 </root>
