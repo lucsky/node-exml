@@ -6,10 +6,10 @@ var parser = new exml.Parser();
 var name = null;
 var contacts = [];
 
-parser.on('address-book', function(_, attributes) {
+parser.on('address-book', function(attributes) {
     name = attributes.name;
 
-    parser.on('contact', function(_, attributes) {
+    parser.on('contact', function(attributes) {
         var contact = {};
         contacts.push(contact);
 
