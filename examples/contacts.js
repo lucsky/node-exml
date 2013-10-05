@@ -11,17 +11,11 @@ parser.on('address-book', function(attributes) {
 
     parser.on('contact', function(attributes) {
         var contact = {};
-        contacts.push(contact);
+        parser.on('first-name', '$content', exml.assign(contact, 'firstName'));
+        parser.on('last-name', '$content', exml.assign(contact, 'lastName'));
+        parser.on('address', '$content', exml.assign(contact, 'address'));
 
-        parser.on('first-name', '$content', function(content) {
-            contact.firstName = content;
-        });
-        parser.on('last-name', '$content', function(content) {
-            contact.lastName = content;
-        });
-        parser.on('address', '$content', function(content) {
-            contact.address = content;
-        });
+        contacts.push(contact);
     });
 });
 

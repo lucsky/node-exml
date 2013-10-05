@@ -196,3 +196,23 @@ module.exports['mixed content events'] = {
         test.done();
     }
 };
+
+module.exports['automatic property assignment'] = function(test) {
+    var parser = new exml.Parser();
+    var nodes = [];
+
+    parser.on('root', 'node', function() {
+        var node = {};
+        nodes.push(node);
+        parser.on('$content', exml.assign(node, 'content'));
+    });
+
+    parser.end(TEXT_XML);
+
+    test.equal(nodes.length, '3');
+    test.equal(nodes[0].content, 'text content 1');
+    test.equal(nodes[1].content, 'text content 2');
+    test.equal(nodes[2].content, 'text content 3');
+
+    test.done();
+};
